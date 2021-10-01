@@ -21,13 +21,24 @@ type HostExtensions =
         log.LogInformation("Starting db migration.")
 
         let configuration = host.Services.GetService<ServerConfiguration>()
-        printfn "configuration: %A" (configuration |> Configuration.toSafeString)
+
+//        use conn = new MySqlConnection("Server=localhost; Port=3306; Uid=root; Pwd=mariadbexamplepassword; SslMode=None;")
+//        conn.Open()
+//        let setcmd = new MySqlCommand("SET character_set_results=utf8", conn)
+//        setcmd.ExecuteNonQuery() |> ignore
+//        setcmd.Dispose()
+//        conn.Close()
+//
+//        //TODO does not work https://stackoverflow.com/questions/68645324/system-notsupportedexception-character-set-utf8mb3-is-not-supported-by-net-f
+//        EnsureDatabase.For
+//            .MySqlDatabase(configuration.Database.ConnectionString, "utf8mb4")
+
 
         let upgrader =
             DeployChanges.To
                 .MySqlDatabase(configuration.Database.ConnectionString)
                 .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-                .WithTransaction()
+                .WithTransactionPerScript()
                 .LogToConsole()
                 .LogScriptOutput()
                 .Build()

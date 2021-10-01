@@ -6,10 +6,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Configuration.fs" />
+    <Compile Include="BooksApi.fs" />
     <Compile Include="WebApp.fs" />
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
-    <EmbeddedResource Include="MigrationScripts\0000-SkeletonStructure.sql" />
+    <EmbeddedResource Include="MigrationScripts\0001-BasicStructure.sql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Alexandria.Shared\Alexandria.Shared.fsproj" />

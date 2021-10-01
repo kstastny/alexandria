@@ -36,6 +36,7 @@ let webApp config : HttpHandler =
         routeStartsWith "/api"
             >=> choose [
                 route "/api/test" >=> text "OK"
+                BooksApi.booksApiRemoting config
                 remoting
             ]
         htmlFile "public/index.html"
