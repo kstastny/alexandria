@@ -1,0 +1,11 @@
+Microsoft.ApplicationInsights.AspNetCore
+Giraffe
+Fable.Remoting.Giraffe
+FsToolkit.ErrorHandling.TaskResult
+
+
+dbup-mysql
+Dapper
+Dapper.SqlBuilder
+Dapper.FSharp
+MySqlConnector
