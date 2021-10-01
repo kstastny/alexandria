@@ -4,15 +4,21 @@ version: '3.1'
 services:
 
   db:
-    image: mariadb
+    #use 10.5 due to https://jira.mariadb.org/browse/MDEV-26105
+    image: mariadb:10.5
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: mariadbexamplepassword
     ports:
-      - 3306:3306      
+      - 3306:3306
+    volumes:
+      - alexandria-db:/var/lib/mysql            
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8090:8080
+
+volumes:
+  alexandria-db:
