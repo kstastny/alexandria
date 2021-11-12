@@ -22,6 +22,7 @@ let AppView () =
     let render =
         match page with
         | Page.Index -> Pages.Index.IndexView ()
+        //TODO prepare two versions including editing and then decide
         | Page.BookList -> Pages.BookList.BookListView ()
         | Page.About -> Html.text "SAFEr Template"
     React.router [

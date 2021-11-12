@@ -2,33 +2,33 @@
 
 open System
 
+open Alexandria.Shared.BooksApi
 open Fable.FontAwesome
 
 open Feliz
 open Feliz.Bulma
 open Feliz.UseDeferred
+open Feliz.UseElmish
+
+
 open Alexandria.Client
 
-let faButton icon title onClick isEnabled =
-    Bulma.button.button
-        [
-            prop.className "button"
-            prop.title title
-            prop.disabled (not isEnabled)
-            prop.onClick onClick
-            prop.children [ Fa.span [ icon ] [  ] ]
-        ]
+open Components
 
-let buttonAdd = faButton Fa.Solid.PlusSquare "Add"
-let buttonEdit = faButton Fa.Solid.Edit "Edit"
-let buttonDelete = faButton Fa.Solid.Trash "Delete"
+[<ReactComponent>]
+let BasicDeferred() =
+    let loadData = async {
+        do! Async.Sleep 1000
+        return "Hello!"
+    }
 
-let defaultTableOptions = [ table.isHoverable; table.isStriped; table.isBordered; table.isFullWidth; ]
+    let data = React.useDeferred(loadData, [| |])
 
-let showAlert (x: string) =
-     Fable.Core.JS.eval $"alert('%s{x}')" |> ignore
-
-let listString (x: string list) = String.Join(",", x)
+    match data with
+    | Deferred.HasNotStartedYet -> Html.none
+    | Deferred.InProgress -> Html.i [ prop.className [ "fa"; "fa-refresh"; "fa-spin"; "fa-2x" ] ]
+    | Deferred.Failed error -> Html.div error.Message
+    | Deferred.Resolved content -> Html.h1 content
 
 
 
@@ -36,8 +36,20 @@ let listString (x: string list) = String.Join(",", x)
 let BookListView () =
 
     let callReq,setCallReq = React.useState(Deferred.HasNotStartedYet)
-    let startLoadingData = React.useDeferredCallback((fun _ -> Server.bookService.GetBooks()), setCallReq)
+    let startLoadingData =
+            React.useDeferredCallback((fun _ -> Server.bookService.GetBooks()),
+                                      (fun x ->
+                                           match x with
+                                            | Deferred.HasNotStartedYet -> printfn "has not started"
+                                            | Deferred.InProgress -> printfn "in progress"
+                                            | Deferred.Resolved books -> printfn "loaded"
+                                            | Deferred.Failed err -> printfn "err"
+                                           setCallReq x
+                                        )
+                                                     )
     React.useEffect(startLoadingData, [| |])
+
+    let selectedBook, setSelected = React.useState(None)
 
     let content =
         match callReq with
@@ -50,7 +62,9 @@ let BookListView () =
                     prop.children [
                         buttonAdd (fun _ -> showAlert "Clicked add") true
                         buttonEdit (fun _ -> printfn "Clicked Edit") true
+                        BasicDeferred ()
                     ]
+
                 ]
 
                 Bulma.table [
@@ -66,8 +80,14 @@ let BookListView () =
                             for book in books do
                                 yield
                                     Html.tr [
-                                        Html.td book.Title
-                                        Html.td (book.Authors |> listString)
+                                        if Some book = selectedBook then
+                                            prop.className "is-selected"
+                                        else
+                                            prop.onClick (fun _ -> setSelected (Some book))
+                                        prop.children [
+                                            Html.td book.Title
+                                            Html.td (book.Authors |> listString)
+                                        ]
                                     ]
                         ]
                     ]
@@ -75,13 +95,4 @@ let BookListView () =
             ]
         | Deferred.Failed err -> Html.p [ prop.text err.Message ]
 
-    Bulma.container
-        [
-          container.isFluid
-//          prop.onKeyDown (fun e ->
-//               if (e.key = "Escape") then
-//                   onEscape ()
-//          )
-
-          prop.children content
-        ]
+    mainContent content

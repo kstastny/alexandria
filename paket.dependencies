@@ -15,6 +15,7 @@ nuget Feliz
 nuget Feliz.Bulma
 nuget Feliz.Router
 nuget Feliz.UseDeferred
+nuget Feliz.UseElmish
 nuget FsToolkit.ErrorHandling.TaskResult
 
 nuget Fable.FontAwesome
