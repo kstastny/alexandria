@@ -12,4 +12,5 @@ Run the app
 > dotnet fake build
 
 Client: http://localhost:8080/
+
 Server: http://localhost:5000/
