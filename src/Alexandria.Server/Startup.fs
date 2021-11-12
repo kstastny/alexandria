@@ -1,7 +1,5 @@
 ﻿module Alexandria.Server.Startup
 
-open Dapper
-open Dapper.FSharp.OptionTypes
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Configuration
@@ -15,8 +13,6 @@ type Startup(cfg: IConfiguration, env: IWebHostEnvironment) =
     member _.ConfigureServices (services: IServiceCollection) =
 
         Dapper.FSharp.OptionTypes.register()
-        //TODO can be removed after Dapper.FSharp update
-        SqlMapper.AddTypeHandler (OptionHandler<uint16>())
 
         let config =
             match Configuration.getConfig cfg with
