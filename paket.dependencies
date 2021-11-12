@@ -17,12 +17,16 @@ nuget Feliz.Router
 nuget Feliz.UseDeferred
 nuget FsToolkit.ErrorHandling.TaskResult
 
+nuget Fable.FontAwesome
+nuget Fable.FontAwesome.Free
+
 nuget Dapper
 nuget Dapper.SqlBuilder
 nuget Dapper.FSharp
 
 nuget MySqlConnector
 nuget dbup-mysql 4.4.0
+
 
 group Build
     source https://api.nuget.org/v3/index.json

@@ -6,7 +6,7 @@ open SharedView
 
 [<ReactComponent>]
 let AppView () =
-    let page,setPage = React.useState(Router.currentPath() |> Page.parseFromUrlSegments)
+    let page, setPage = React.useState(Router.currentPath() |> Page.parseFromUrlSegments)
 
     // routing for full refreshed page (to fix wrong urls)
     React.useEffectOnce (fun _ -> Router.navigatePage page)
@@ -15,11 +15,14 @@ let AppView () =
         Html.div [
             Html.a("Home", Page.Index)
             Html.span " | "
+            Html.a("Books", Page.BookList)
+            Html.span " | "
             Html.a("About", Page.About)
         ]
     let render =
         match page with
         | Page.Index -> Pages.Index.IndexView ()
+        | Page.BookList -> Pages.BookList.BookListView ()
         | Page.About -> Html.text "SAFEr Template"
     React.router [
         router.pathMode

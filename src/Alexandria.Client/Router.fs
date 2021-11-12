@@ -6,6 +6,7 @@ open Fable.Core.JsInterop
 
 type Page =
     | Index
+    | BookList
     | About
 
 [<RequireQualifiedAccess>]
@@ -14,6 +15,7 @@ module Page =
 
     let parseFromUrlSegments = function
         | [ "about" ] -> Page.About
+        | [ "books" ] -> Page.BookList
         | [ ] -> Page.Index
         | _ -> defaultPage
 
@@ -21,6 +23,7 @@ module Page =
 
     let toUrlSegments = function
         | Page.Index -> [ ] |> noQueryString
+        | Page.BookList -> ["books"] |> noQueryString
         | Page.About -> [ "about" ] |> noQueryString
 
 [<RequireQualifiedAccess>]

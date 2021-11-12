@@ -2,3 +2,20 @@
 
 @import "~@fortawesome/fontawesome-free/css/all.min.css";
 @import "~bulma";
+
+.toolbar {
+    background-color: #f5f5f5;
+    padding: 10px;
+}
+
+
+.toolbar .button {
+    margin-left: 0;
+    margin-right: 4px;
+}
+
+.toolbar .checkbox {
+    margin-left: 0;
+    margin-right: 4px;
+    padding-right: 4px;
+}
