@@ -8,8 +8,11 @@
         <Compile Include="ElmishHelper.fs" />
         <Compile Include="Router.fs" />
         <Compile Include="SharedView.fs" />
+        <Compile Include="Components\Styles.fs" />
+        <Compile Include="Components\Common.fs" />
+        <Compile Include="Components\Form.fs" />
+        <Compile Include="Components\Dialogs.fs" />
         <Compile Include="Pages\Index.fs" />
-        <Compile Include="Pages\Components.fs" />
         <Compile Include="Pages\BookList.fs" />
         <Compile Include="Pages\BookListElmish.fs" />
         <Compile Include="View.fs" />

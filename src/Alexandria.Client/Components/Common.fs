@@ -1,4 +1,4 @@
-﻿module Alexandria.Client.Pages.Components
+﻿module Alexandria.Client.Components.Common
 
 open System
 

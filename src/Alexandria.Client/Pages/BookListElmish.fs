@@ -13,7 +13,7 @@ open Feliz.UseElmish
 
 open Alexandria.Client
 
-open Components
+open Components.Common
 
 
 

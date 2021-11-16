@@ -13,7 +13,9 @@ open Feliz.UseElmish
 
 open Alexandria.Client
 
-open Components
+open Components.Common
+open Components.Dialogs
+open Components.Form
 
 [<ReactComponent>]
 let BasicDeferred() =
@@ -32,10 +34,80 @@ let BasicDeferred() =
 
 
 
+
+
+
+[<ReactComponent>]
+let BookEditView onClose =
+
+  //  let saveRequest, setSaveRequest = React.useState Deferred.HasNotStartedYet
+
+    let title, setTitle = React.useState ""
+    let author, setAuthor = React.useState ""
+
+    let error, setError = React.useState None
+
+    let addBook  =
+        //TODO validation
+        React.useDeferredCallback(
+            (fun _ ->
+                let arg = {
+                    Title = title
+                    //TODO multiple
+                    Authors = [ author ]
+                    Year = None
+                    InventoryLocation = ""
+                    Note = ""
+                }
+                Server.bookService.AddBook(arg)
+            ),
+            (fun x ->
+                match x with
+                | Deferred.HasNotStartedYet -> printfn "has not started"
+                | Deferred.InProgress -> printfn "in progress"
+                | Deferred.Resolved _ ->
+                    printfn "saved"; onClose()
+                | Deferred.Failed err ->
+                    printfn "err: %A" (string err)
+                    setError (Some err.Message)
+            ))
+
+
+
+    let editFormElements =
+        [
+            Html.form [
+                formField "Title"
+                    (Bulma.input.text [
+                        prop.valueOrDefault title
+                        prop.onTextChange setTitle ])
+                formField "Author"
+                    (Bulma.input.text [
+                        prop.valueOrDefault author
+                        prop.onTextChange setAuthor ])
+            ]
+        ]
+
+
+    //TODO propagate to error report upwards, better handling
+    match error with
+    | None ->
+        editDialog
+            "Book Edit"
+            editFormElements
+            true
+            (fun _ -> addBook()) //TODO do immediately or return up? should be fine here in this style...
+            (fun _ -> onClose ())
+    | Some x ->
+        Dialog.ErrorDialog("Err", sprintf "%A" x, true, (fun _ -> setError None))
+
+
 [<ReactComponent>]
 let BookListView () =
 
-    let callReq,setCallReq = React.useState(Deferred.HasNotStartedYet)
+    let isEditing, setIsEditing = React.useState false
+
+    let callReq, setCallReq = React.useState Deferred.HasNotStartedYet
     let startLoadingData =
             React.useDeferredCallback((fun _ -> Server.bookService.GetBooks()),
                                       (fun x ->
@@ -60,11 +132,10 @@ let BookListView () =
                 Html.div [
                     prop.className "toolbar"
                     prop.children [
-                        buttonAdd (fun _ -> showAlert "Clicked add") true
-                        buttonEdit (fun _ -> printfn "Clicked Edit") true
+                        buttonAdd (fun _ -> setIsEditing true) true
+                        buttonEdit (fun _ -> showAlert "Clicked Edit") true
                         BasicDeferred ()
                     ]
-
                 ]
 
                 Bulma.table [
@@ -92,6 +163,9 @@ let BookListView () =
                         ]
                     ]
                 ]
+
+                if isEditing then
+                    Html.div [ BookEditView (fun _ -> setIsEditing false) ]
             ]
         | Deferred.Failed err -> Html.p [ prop.text err.Message ]
 
