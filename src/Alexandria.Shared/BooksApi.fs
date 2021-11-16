@@ -21,7 +21,7 @@ type AddBook = {
 //NOTE: must be record type for Fable.Remoting
 type BookService = {
     GetBooks : unit -> Async<Book list>
-    AddBook : AddBook -> Async<unit>
+    AddBook : AddBook -> Async<Book>
 }
 with
     static member RouteBuilder _ m = sprintf "/api/bookService/%s" m

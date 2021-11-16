@@ -57,12 +57,6 @@ let private booksApi (config: ServerConfiguration)  =
             task {
                 use conn = new MySqlConnection(config.Database.ConnectionString) :> IDbConnection
 
-                //TODO two queries, otherwise paging won't be possible with multiple authors. and use Dapper.FSharp
-//                let! books =
-//                    //conn.QueryAsync<byte array * string * string>(
-//                    conn.QueryAsync<BookDO>(
-//                        """select b.BookId, b.Title, a.Name as AuthorName from Books b, Authors a, BookAuthors ba where ba.BookId = b.BookId and a.AuthorId = ba.AuthorId""")
-
                 let! bookDOList =
                     select {
                         for b in bookTable do
@@ -109,7 +103,48 @@ let private booksApi (config: ServerConfiguration)  =
                         )
             } |> Async.AwaitTask
 
-        AddBook = fun _ -> failwith "tbd"
+        AddBook = fun b ->
+            task {
+                use conn = new MySqlConnection(config.Database.ConnectionString) :> IDbConnection
+
+                //TODO validation
+                let bookDO = {
+                    BookId = Guid.NewGuid().ToByteArray()
+                    Title = b.Title
+                    Year = b.Year
+                    Note = Some b.Note
+                }
+
+                let! _ =
+                    insert {
+                        into bookTable
+                        value bookDO
+                    } |> conn.InsertAsync
+
+                //TODO locate author if it exists
+                for a in b.Authors do
+                    let authorDO = {
+                        AuthorId = Guid.NewGuid().ToByteArray()
+                        Name = a
+                    }
+
+                    let! _ = insert { into authorTable; value authorDO } |> conn.InsertAsync
+
+                    let bookAuthorDO = { BookId = bookDO.BookId; AuthorId = authorDO.AuthorId }
+                    let! _ = insert { into bookAuthorTable; value bookAuthorDO } |> conn.InsertAsync
+                    ()
+
+                //TODO load from DB
+                return {
+                    Id = bookDO.BookId |> Guid
+                    Title = bookDO.Title
+                    Year = bookDO.Year
+                    //InventoryLocation = book.InventoryLocation
+                    InventoryLocation = "TBD"
+                    Authors = b.Authors// :)
+                }
+
+             } |> Async.AwaitTask
     }
 
 type Error = { ErrorMsg: string }
