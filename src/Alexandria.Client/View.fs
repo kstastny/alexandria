@@ -36,6 +36,7 @@ let navigation setPage =
                     prop.children [
                         Html.span [ prop.ariaHidden true ]
                         Html.span [ prop.ariaHidden true]
+                        Html.span [ prop.ariaHidden true]
                     ]
                 ]
             ]
