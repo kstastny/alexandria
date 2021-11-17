@@ -22,8 +22,6 @@ open Components.Form
 [<ReactComponent>]
 let BookEditView onSaved onClose =
 
-  //  let saveRequest, setSaveRequest = React.useState Deferred.HasNotStartedYet
-
     let title, setTitle = React.useState ""
     let author, setAuthor = React.useState ""
 

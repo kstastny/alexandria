@@ -121,7 +121,7 @@ let private booksApi (config: ServerConfiguration)  =
                         value bookDO
                     } |> conn.InsertAsync
 
-                //TODO locate author if it exists
+                //TODO locate author if it exists (normalized string, no diacritics, lowercase)
                 for a in b.Authors do
                     let authorDO = {
                         AuthorId = Guid.NewGuid().ToByteArray()

@@ -12,9 +12,7 @@
         <Compile Include="Components\Common.fs" />
         <Compile Include="Components\Form.fs" />
         <Compile Include="Components\Dialogs.fs" />
-        <Compile Include="Pages\Index.fs" />
         <Compile Include="Pages\BookList.fs" />
-        <Compile Include="Pages\BookListElmish.fs" />
         <Compile Include="View.fs" />
         <Compile Include="App.fs" />
     </ItemGroup>

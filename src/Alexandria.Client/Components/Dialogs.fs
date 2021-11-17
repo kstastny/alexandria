@@ -1,8 +1,6 @@
 ﻿module Alexandria.Client.Components.Dialogs
 
 
-open System.Runtime.InteropServices
-
 open Fable.React
 
 
@@ -121,7 +119,6 @@ type Dialog private() =
     static member ModalEditDialog
         (
             title,
-          //TODO if needed  customClass, `prop.className customClass`
             content,
             isActive,
             onSave,

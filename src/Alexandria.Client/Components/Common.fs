@@ -2,16 +2,11 @@
 
 open System
 
-open Alexandria.Shared.BooksApi
 open Fable.FontAwesome
 
 open Feliz
 open Feliz.Bulma
-open Feliz.UseDeferred
-open Feliz.UseElmish
 
-
-open Alexandria.Client
 
 let faButton icon title onClick isEnabled =
     Bulma.button.button
