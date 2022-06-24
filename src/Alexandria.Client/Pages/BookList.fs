@@ -20,26 +20,36 @@ open Components.Form
 
 
 [<ReactComponent>]
-let BookEditView onSaved onClose =
+let BookEditView (editedBook: Book option) onSaved onClose =
 
-    let title, setTitle = React.useState ""
-    let author, setAuthor = React.useState ""
+    let title, setTitle = React.useState (editedBook |> Option.map (fun x -> x.Title) |> Option.defaultValue "")
+    //TODO multiple authors
+    let author, setAuthor = React.useState (editedBook |> Option.bind (fun x -> x.Authors |> List.tryHead) |> Option.defaultValue "")
 
     let error, setError = React.useState None
 
-    let addBook  =
+    let addOrEditBook  =
         //TODO validation
         React.useDeferredCallback(
             (fun _ ->
-                let arg = {
-                    Title = title
-                    //TODO multiple
-                    Authors = [ author ]
-                    Year = None
-                    InventoryLocation = ""
-                    Note = ""
-                }
-                Server.bookService.AddBook(arg)
+                match editedBook with
+                | None ->
+                    let arg = {
+                        Title = title
+                        //TODO multiple
+                        Authors = [ author ]
+                        Year = None
+                        InventoryLocation = ""
+                        Note = ""
+                    }
+                    Server.bookService.AddBook(arg)
+                | Some x ->
+                    let arg : EditBook = {
+                        BookId = x.Id
+                        Title = title
+                        Authors = [ author ]
+                    }
+                    Server.bookService.EditBook(arg)
             ),
             (fun x ->
                 match x with
@@ -76,7 +86,7 @@ let BookEditView onSaved onClose =
             "Book Edit"
             editFormElements
             true
-            (fun _ -> addBook()) //TODO do immediately or return up? should be fine here in this style...
+            (fun _ -> addOrEditBook()) //TODO do immediately or return up? should be fine here in this style...
             (fun _ -> onClose ())
     | Some x ->
         Dialog.ErrorDialog("Err", sprintf "%A" x, true, (fun _ -> setError None))
@@ -109,10 +119,13 @@ let BookListView () =
     let content =
         Html.div [
             Html.div [
+                //TODO sticky
                 prop.className "toolbar"
                 prop.children [
-                    buttonAdd (fun _ -> setIsEditing true) true
-                    buttonEdit (fun _ -> showAlert "Clicked Edit") true
+                    buttonAdd (fun _ ->
+                        setSelected None
+                        setIsEditing true) true
+                    buttonEdit (fun _ -> setIsEditing true) true
                 ]
             ]
 
@@ -151,7 +164,9 @@ let BookListView () =
 
             if isEditing then
                 Html.div [ BookEditView
+                               selectedBook
                                (fun b ->
+                                    //TODO handle edit
                                     books @ [ b ] |> setBooks
                                     setIsEditing false)
                                (fun _ -> setIsEditing false)

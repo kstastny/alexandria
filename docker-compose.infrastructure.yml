@@ -20,21 +20,5 @@ services:
       - 8090:8080
 
 
-  alexandria:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    #https://docs.docker.com/compose/startup-order/
-    depends_on:
-      - "db"
-    command: ["./wait-for-it.sh", "db:3306", "--", "python", "app.py"]
-    ports:
-      - 8080:5000
-    environment:
-      DB__CONNECTIONSTRING: Server=db;Port=3306;Database=alexandria;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};SslMode=none
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
-
-
-
 volumes:
   alexandria-db:
