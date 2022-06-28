@@ -17,6 +17,7 @@
         <Compile Include="App.fs" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\Alexandria.Shared.API\Alexandria.Shared.API.fsproj" />
         <ProjectReference Include="..\Alexandria.Shared\Alexandria.Shared.fsproj" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />

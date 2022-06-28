@@ -1,14 +1,9 @@
 ﻿module Alexandria.Shared.BooksApi
 
 open System
+open Alexandria.Shared.Domain
 
-type Book = {
-    Id: Guid
-    Title: string
-    Authors: string list
-    Year: uint16 option
-    InventoryLocation: string
-}
+
 
 type AddBook = {
     Title: string
@@ -32,4 +27,4 @@ type BookService = {
     EditBook : EditBook -> Async<Book>
 }
 with
-    static member RouteBuilder _ m = sprintf "/api/bookService/%s" m
+    static member RouteBuilder _ m = $"/api/bookService/%s{m}"

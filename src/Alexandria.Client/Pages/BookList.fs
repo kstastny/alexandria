@@ -3,6 +3,7 @@
 open System
 
 open Alexandria.Shared.BooksApi
+open Alexandria.Shared.Domain
 open Fable.FontAwesome
 
 open Feliz
@@ -24,7 +25,11 @@ let BookEditView (editedBook: Book option) onSaved onClose =
 
     let title, setTitle = React.useState (editedBook |> Option.map (fun x -> x.Title) |> Option.defaultValue "")
     //TODO multiple authors
-    let author, setAuthor = React.useState (editedBook |> Option.bind (fun x -> x.Authors |> List.tryHead) |> Option.defaultValue "")
+    let author, setAuthor =
+        React.useState (editedBook |> Option.bind
+                                          (fun x -> x.Authors |> List.tryHead)
+                        |> Option.map (fun x -> x.Name)
+                        |> Option.defaultValue "")
 
     let error, setError = React.useState None
 
@@ -155,7 +160,7 @@ let BookListView () =
                                         prop.onClick (fun _ -> setSelected (Some book))
                                     prop.children [
                                         Html.td book.Title
-                                        Html.td (book.Authors |> listString)
+                                        Html.td (book.Authors |> List.map (fun y -> y.Name) |> listString)
                                     ]
                                 ]
                     ]

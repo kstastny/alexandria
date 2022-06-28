@@ -4,7 +4,6 @@
         <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="BooksApi.fs" />
-        <Compile Include="API.fs" />
+        <Compile Include="Domain.fs" />
     </ItemGroup>
 </Project>
