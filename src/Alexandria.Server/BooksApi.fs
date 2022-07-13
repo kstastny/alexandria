@@ -21,56 +21,39 @@ open Alexandria.Shared.Domain
 open Alexandria.Shared.BooksApi
 open Alexandria.Data.DataObjects
 
+
+let private createAndOpenConnection (config: ServerConfiguration) =
+    let conn = new MySqlConnection(config.Database.ConnectionString) :> IDbConnection
+    conn.Open()
+    conn
+
 let private booksApi (config: ServerConfiguration)  =
     {
         GetBooks = fun _ ->
             task {
-                use conn = new MySqlConnection(config.Database.ConnectionString) :> IDbConnection
+                use conn = createAndOpenConnection config
+
+                printfn "2 conn state = %A" conn.State
 
                 return! Books.getBooks conn
             } |> Async.AwaitTask
 
         AddBook = fun b ->
             task {
-                use conn = new MySqlConnection(config.Database.ConnectionString) :> IDbConnection
+                use conn = createAndOpenConnection config
 
-                //TODO validation
-                let bookDO = {
-                    BookId = Guid.NewGuid().ToByteArray()
-                    Title = b.Title
-                    Year = b.Year
-                    Note = Some b.Note
-                }
+                printfn "conn state = %A" conn.State
 
-                let! _ =
-                    insert {
-                        into bookTable
-                        value bookDO
-                    } |> conn.InsertAsync
+                let! authors =
+                    Authors.getOrCreateAuthorsByName conn b.Authors
 
-                //TODO locate author if it exists (normalized string, no diacritics, lowercase)
-                for a in b.Authors do
-                    let authorDO = {
-                        AuthorId = Guid.NewGuid().ToByteArray()
-                        Name = a
-                    }
-
-                    let! _ = insert { into authorTable; value authorDO } |> conn.InsertAsync
-
-                    let bookAuthorDO = { BookId = bookDO.BookId; AuthorId = authorDO.AuthorId }
-                    let! _ = insert { into bookAuthorTable; value bookAuthorDO } |> conn.InsertAsync
-                    ()
-
-                //TODO load from DB
-                return {
-                    Id = bookDO.BookId |> Guid
-                    Title = bookDO.Title
-                    Year = bookDO.Year
-                    //InventoryLocation = book.InventoryLocation
-                    InventoryLocation = "TBD"
-                    //TODO Authors = b.Authors// :)
-                    Authors = []
-                }
+                return! Books.addBook
+                            conn
+                            {| Title = b.Title
+                               //TODO preserve order of authors
+                               Authors = authors
+                               Year = b.Year
+                               Note = b.Note |}
 
              } |> Async.AwaitTask
 
@@ -81,7 +64,7 @@ let private booksApi (config: ServerConfiguration)  =
                 let bookId = editBook.BookId.ToByteArray()
                 let! bookDO =
                     select {
-                        for book in bookTable do
+                        for book in booksTable do
                         where (book.BookId = bookId)
                     }
                     |> conn.SelectAsync<BookDO>
@@ -103,7 +86,7 @@ let private booksApi (config: ServerConfiguration)  =
 
                     let! _ =
                         update {
-                            for b in bookTable do
+                            for b in booksTable do
                             set updatedBook
                             where (b.BookId = updatedBook.BookId)
                         } |> conn.UpdateAsync
@@ -116,11 +99,11 @@ let private booksApi (config: ServerConfiguration)  =
                             Name = a
                         }
 
-                        let! _ = delete { for ba in bookAuthorTable do where (ba.BookId = book.BookId) } |> conn.DeleteAsync
-                        let! _ = insert { into authorTable; value authorDO } |> conn.InsertAsync
+                        let! _ = delete { for ba in booksAuthorsTable do where (ba.BookId = book.BookId) } |> conn.DeleteAsync
+                        let! _ = insert { into authorsTable; value authorDO } |> conn.InsertAsync
 
                         let bookAuthorDO = { BookId = book.BookId; AuthorId = authorDO.AuthorId }
-                        let! _ = insert { into bookAuthorTable; value bookAuthorDO } |> conn.InsertAsync
+                        let! _ = insert { into booksAuthorsTable; value bookAuthorDO } |> conn.InsertAsync
                         ()
 
                     //TODO load from DB

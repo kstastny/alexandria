@@ -41,6 +41,6 @@ type BookAuthorDO = {
     AuthorId: byte array
 }
 
-let bookTable = table'<BookDO> "Books"
-let authorTable = table'<AuthorDO> "Authors"
-let bookAuthorTable = table'<BookAuthorDO> "BookAuthors"
+let booksTable = table'<BookDO> "Books"
+let authorsTable = table'<AuthorDO> "Authors"
+let booksAuthorsTable = table'<BookAuthorDO> "BookAuthors"
