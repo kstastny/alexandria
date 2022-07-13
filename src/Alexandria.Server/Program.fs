@@ -4,6 +4,7 @@ open System.Reflection
 open System.Runtime.CompilerServices
 
 open System.Security.Authentication
+open Alexandria.Data
 open Alexandria.Server.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
@@ -20,22 +21,10 @@ type HostExtensions =
         let log = host.Services.GetService<ILogger<HostExtensions>>()
         log.LogInformation("Starting db migration.")
 
+
         let configuration = host.Services.GetService<ServerConfiguration>()
+        let result = DbMigration.migrateDb configuration.Database.ConnectionString
 
-        EnsureDatabase.For
-            .MySqlDatabase(configuration.Database.ConnectionString)
-
-
-        let upgrader =
-            DeployChanges.To
-                .MySqlDatabase(configuration.Database.ConnectionString)
-                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-                .WithTransactionPerScript()
-                .LogToConsole()
-                .LogScriptOutput()
-                .Build()
-
-        let result = upgrader.PerformUpgrade()
         log.LogInformation("Db migration ended, Success: {0}", result.Successful)
         host
 

@@ -17,7 +17,7 @@ type Startup(cfg: IConfiguration, env: IWebHostEnvironment) =
         let config =
             match Configuration.getConfig cfg with
             | Ok x -> x
-            | Error e -> failwithf "Configuration error: %A" e
+            | Error e -> failwithf $"Configuration error: %A{e}"
 
         services.AddSingleton<ServerConfiguration>(config) |> ignore
 

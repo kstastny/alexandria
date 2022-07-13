@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DataObjects.fs" />
+    <Compile Include="DbMigration.fs" />
+    <Compile Include="Query\Authors.fs" />
+    <Compile Include="Query\Books.fs" />
+    <Content Include="paket.references" />
+    <EmbeddedResource Include="MigrationScripts\0001-BasicStructure.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Alexandria.Shared\Alexandria.Shared.fsproj" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
