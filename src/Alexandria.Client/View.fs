@@ -16,6 +16,7 @@ let navigation setPage =
 
     Bulma.navbar [
         Bulma.color.isDanger
+        navbar.isFixedTop
         prop.children [
             Bulma.navbarBrand.div [
                 Bulma.navbarItem.a [

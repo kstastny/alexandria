@@ -53,6 +53,9 @@ let BookEditView (editedBook: Book option) onSaved onClose =
                         BookId = x.Id
                         Title = title
                         Authors = [ author ]
+                        Year = x.Year
+                        InventoryLocation = x.InventoryLocation
+                        Note = ""
                     }
                     Server.bookService.EditBook(arg)
             ),
@@ -97,6 +100,9 @@ let BookEditView (editedBook: Book option) onSaved onClose =
         Dialog.ErrorDialog("Err", sprintf "%A" x, true, (fun _ -> setError None))
 
 
+let private sort (books: Book list) =
+    books |> List.sortBy (fun x -> (x.Authors |> List.tryHead, x.Title))
+
 [<ReactComponent>]
 let BookListView () =
 
@@ -124,7 +130,6 @@ let BookListView () =
     let content =
         Html.div [
             Html.div [
-                //TODO sticky
                 prop.className "toolbar"
                 prop.children [
                     buttonAdd (fun _ ->
@@ -151,7 +156,7 @@ let BookListView () =
                         ]
                     ]
                     Html.tbody [
-                        for book in books do
+                        for book in books |> sort do
                             yield
                                 Html.tr [
                                     if Some book = selectedBook then
@@ -171,8 +176,10 @@ let BookListView () =
                 Html.div [ BookEditView
                                selectedBook
                                (fun b ->
-                                    //TODO handle edit
-                                    books @ [ b ] |> setBooks
+                                    setSelected (Some b)
+                                    books @ [ b ]
+                                    |> List.distinctBy (fun x -> x.Id)
+                                    |> setBooks
                                     setIsEditing false)
                                (fun _ -> setIsEditing false)
                                ]
