@@ -100,3 +100,51 @@ let addBook
 
         return! getById dbConnection bookId
     }
+
+
+let editBook
+    (dbConnection: IDbConnection)
+    (bookId: Guid)
+    (book: {|
+      Title: string
+      Authors: Author list
+      Year: uint16 option
+      Note: string
+    |}) =
+    task {
+        use tran = dbConnection.BeginTransaction()
+
+        let bookIdBytes = bookId.ToByteArray ()
+        let! bookDO =
+            select {
+                for b in booksTable do
+                    where (b.BookId = bookIdBytes)
+            }
+            |> dbConnection.SelectAsync<BookDO>
+            |> Task.map Seq.head
+
+        let updatedBook = {
+            bookDO with
+                Title = book.Title
+                Year = book.Year
+                Note = Some book.Note
+        }
+
+        let! _ =
+               update {
+                   for b in booksTable do
+                   set updatedBook
+                   where (b.BookId = updatedBook.BookId)
+               } |> dbConnection.UpdateAsync
+
+        let! _ = delete { for ba in booksAuthorsTable do where (ba.BookId = bookIdBytes) }
+                 |> dbConnection.DeleteAsync
+        for a in book.Authors do
+            let bookAuthorDO = { BookId = bookDO.BookId; AuthorId = a.Id.ToByteArray() }
+            let! _ = insert { into booksAuthorsTable; value bookAuthorDO } |> dbConnection.InsertAsync
+            ()
+
+        tran.Commit()
+
+        return! getById dbConnection bookId
+    }

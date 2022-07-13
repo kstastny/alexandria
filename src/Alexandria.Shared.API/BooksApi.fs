@@ -17,7 +17,9 @@ type EditBook = {
     BookId: Guid
     Title: string
     Authors: string list
-    //TODO rest
+    Year: uint16 option
+    InventoryLocation: string
+    Note: string
 }
 
 //NOTE: must be record type for Fable.Remoting
