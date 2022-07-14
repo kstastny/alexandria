@@ -8,6 +8,8 @@ open Fable.FontAwesome
 open Router
 open SharedView
 
+open Alexandria.Client.Components.Common
+
 [<ReactComponent>]
 let navigation setPage =
 
@@ -69,10 +71,14 @@ let AppView () =
     let render =
         match page with
         | Page.Books -> Pages.BookList.BookListView ()
-        | Page.Authors -> Html.text "TBD"
+        | Page.Authors -> mainContent (Html.text "TBD")
 
     React.router [
         router.pathMode
         router.onUrlChanged (Page.parseFromUrlSegments >> setPage)
-        router.children [ navigation setPage; render ]
+        router.children [ navigation setPage
+                          Bulma.columns [
+                              prop.style [ style.marginTop 60; style.marginRight 5 ]
+                              prop.children [ render  ]  ]
+                        ]
     ]
