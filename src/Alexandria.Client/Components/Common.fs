@@ -29,14 +29,14 @@ let showAlert (x: string) =
 
 let listString (x: string list) = String.Join(",", x)
 
-let mainContent (content: ReactElement) =
+let mainContent onEscape (content: ReactElement) =
     Bulma.container
         [
           container.isFluid
-//          prop.onKeyDown (fun e ->
-//               if (e.key = "Escape") then
-//                   onEscape ()
-//          )
+          prop.onKeyDown (fun e ->
+               if (e.key = "Escape") then
+                   onEscape ()
+          )
 
           prop.children content
         ]

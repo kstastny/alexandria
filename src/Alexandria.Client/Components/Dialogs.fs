@@ -34,28 +34,35 @@ type Dialog private() =
             prop.children [
                 Bulma.modalBackground [ prop.onClick lOnClose ]
                 Bulma.modalCard [
-                    Bulma.modalCardHead [
-                        match headerStyle with
-                        | Some x -> prop.style x
-                        | None -> ()
-                        prop.children [
-                            Bulma.modalCardTitle [
-                            prop.text title ]
-                            Bulma.delete [ prop.onClick lOnClose ]
+                    prop.onKeyDown (fun e ->
+                         if (e.key = "Enter") then
+                             lOnOk ()
+                    )
+                    prop.children [
+                        Bulma.modalCardHead [
+                            match headerStyle with
+                            | Some x -> prop.style x
+                            | None -> ()
+                            prop.children [
+                                Bulma.modalCardTitle [
+                                prop.text title ]
+                                Bulma.delete [ prop.onClick lOnClose ]
+                            ]
                         ]
+                        Bulma.modalCardBody content
+                        Bulma.modalCardFoot
+                            [ match buttons with
+                                | OkOnly ->
+                                    yield Bulma.button.button [ color.isSuccess ; prop.onClick lOnClose ; prop.text "OK"]
+                                | SaveCancel ->
+                                    yield Bulma.button.button [ color.isSuccess; prop.onClick (fun _ -> lOnOk ()) ; prop.text "Save Changes"]
+                                    yield Bulma.button.button [ prop.onClick lOnClose ; prop.text "Cancel"]
+                                | YesNo ->
+                                    yield Bulma.button.button [ color.isSuccess; prop.onClick (fun _ -> lOnOk ()) ; prop.text "Yes"]
+                                    yield Bulma.button.button [ prop.onClick lOnClose ; prop.text "No"]
+                            ]
+
                     ]
-                    Bulma.modalCardBody content
-                    Bulma.modalCardFoot
-                        [ match buttons with
-                            | OkOnly ->
-                                yield Bulma.button.button [ color.isSuccess ; prop.onClick lOnClose ; prop.text "OK"]
-                            | SaveCancel ->
-                                yield Bulma.button.button [ color.isSuccess; prop.onClick lOnOk ; prop.text "Save Changes"]
-                                yield Bulma.button.button [ prop.onClick lOnClose ; prop.text "Cancel"]
-                            | YesNo ->
-                                yield Bulma.button.button [ color.isSuccess; prop.onClick lOnOk ; prop.text "Yes"]
-                                yield Bulma.button.button [ prop.onClick lOnClose ; prop.text "No"]
-                        ]
                 ]
             ]
         ]
@@ -94,7 +101,7 @@ type Dialog private() =
                 OkOnly,
                 isActive,
                 onClose,
-                onClose,
+                (fun _ -> onClose()),
                 headerStyle = [ Styles.ColorWarning ]
             )
 
@@ -112,7 +119,7 @@ type Dialog private() =
                 OkOnly,
                 isActive,
                 onClose,
-                onClose,
+                (fun _ -> onClose()),
                 headerStyle = [ Styles.ColorError ]
             )
 

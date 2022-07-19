@@ -70,8 +70,8 @@ let AppView () =
 
     let render =
         match page with
-        | Page.Books -> Pages.BookList.BookListView ()
-        | Page.Authors -> mainContent (Html.text "TBD")
+        | Page.Books -> Pages.BookListView.BookListView ()
+        | Page.Authors -> mainContent ignore (Html.text "TBD")
 
     React.router [
         router.pathMode

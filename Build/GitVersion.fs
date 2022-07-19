@@ -36,9 +36,6 @@ type GitVersionProperties = {
 
 let generateProperties () =
     let result = DotNet.exec (fun x -> { x with RedirectOutput = true }) "dotnet-gitversion" "/config GitVersion.yml"
-//    printfn "result.ExitCode = %A" result.ExitCode
-//    printfn "result.Messages = %A" result.Messages
-//    printfn "result.Errors = %A" result.Errors
     if result.ExitCode <> 0 then
         failwithf "dotnet-gitversion failed with exit code %i and message %s, errors %s" result.ExitCode (String.concat "" result.Messages) (String.concat "" result.Errors)
 
