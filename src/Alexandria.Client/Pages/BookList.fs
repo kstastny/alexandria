@@ -177,7 +177,7 @@ let BookListView () =
                                selectedBook
                                (fun b ->
                                     setSelected (Some b)
-                                    books @ [ b ]
+                                    b::books
                                     |> List.distinctBy (fun x -> x.Id)
                                     |> setBooks
                                     setIsEditing false)
