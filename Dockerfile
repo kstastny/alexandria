@@ -10,10 +10,11 @@ WORKDIR /workspace
 COPY . .
 RUN dotnet --list-sdks
 RUN dotnet tool restore
-RUN dotnet fake build -t Publish
+#RUN dotnet fake build -t Publish
+RUN dotnet run Publish
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.7-bullseye-slim-arm32v7
 COPY --from=build /workspace/publish/app /app
 WORKDIR /app
 EXPOSE 8085

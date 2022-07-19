@@ -9,8 +9,14 @@ Run the environment
 Link to Adminer: http://localhost:8090/?server=db&username=root
 
 Run the app
-> dotnet fake build
+> dotnet run
 
 Client: http://localhost:8080/
 
 Server: http://localhost:5000/
+
+
+Publish
+> dotnet run Publish
+
+

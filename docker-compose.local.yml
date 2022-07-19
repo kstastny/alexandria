@@ -21,7 +21,9 @@ services:
 
 
   alexandria:
-    image: kstastny/alexandria:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     #https://docs.docker.com/compose/startup-order/
     depends_on:
       - "db"

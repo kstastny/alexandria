@@ -10,6 +10,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Alexandria.Data", "src\Alex
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Alexandria.Shared.API", "src\Alexandria.Shared.API\Alexandria.Shared.API.fsproj", "{47C4D04A-AF82-42F2-9E4C-6F98C7E19B77}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{990D9401-42BF-448F-86E2-C08C9189B69D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Build", "Build.fsproj", "{1CDA99C4-32C2-48F7-8238-2E56EB1EBA27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,7 +40,12 @@ Global
 		{47C4D04A-AF82-42F2-9E4C-6F98C7E19B77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47C4D04A-AF82-42F2-9E4C-6F98C7E19B77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47C4D04A-AF82-42F2-9E4C-6F98C7E19B77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CDA99C4-32C2-48F7-8238-2E56EB1EBA27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CDA99C4-32C2-48F7-8238-2E56EB1EBA27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CDA99C4-32C2-48F7-8238-2E56EB1EBA27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CDA99C4-32C2-48F7-8238-2E56EB1EBA27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{1CDA99C4-32C2-48F7-8238-2E56EB1EBA27} = {990D9401-42BF-448F-86E2-C08C9189B69D}
 	EndGlobalSection
 EndGlobal

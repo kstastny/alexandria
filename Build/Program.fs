@@ -1,13 +1,13 @@
-#r "paket: groupref Build //"
-#load ".fake/build.fsx/intellisense.fsx"
-
-open System.IO
+﻿open System.IO
 open Fake.Core
 open Fake.IO
 open Fake.DotNet
 open Fake.IO.Globbing.Operators
 open Fake.IO.FileSystemOperators
 open Fake.Core.TargetOperators
+open Build.Helpers
+
+initializeContext ()
 
 module Tools =
     let private findTool tool winTool =
@@ -59,7 +59,8 @@ Target.create "InstallClient" (fun _ ->
 
 Target.create "Publish" (fun _ ->
     [ appPublishPath ] |> Shell.cleanDirs
-    let publishArgs = sprintf "publish -c Release -o \"%s\"" appPublishPath
+    //TODO publish for other architectures
+    let publishArgs = sprintf "publish -c Release -r linux-arm -o \"%s\"" appPublishPath
     Tools.dotnet publishArgs serverSrcPath
     [ appPublishPath </> "appsettings.Development.json" ] |> File.deleteAll
     Tools.dotnet (sprintf "fable --outDir %s --run webpack-cli -p" fableBuildPath) clientSrcPath
@@ -84,11 +85,23 @@ Target.create "Run" (fun _ ->
     |> ignore
 )
 
-"InstallClient"
-    ==> "PublishInfrastructure"
-    ==> "Publish"
+let dependencies = [
+    "InstallClient"
+        //==> "PublishInfrastructure"
+        ==> "Publish"
 
-"InstallClient"
-    ==> "Run"
+    "InstallClient"
+        ==> "Run"
+]
 
-Target.runOrDefaultWithArguments "Run"
+
+[<EntryPoint>]
+let main args =
+  try
+      match args with
+      | [| target |] -> Target.runOrDefaultWithArguments target
+      | _ -> Target.runOrDefaultWithArguments "Run"
+      0
+  with e ->
+      printfn "%A" e
+      1
