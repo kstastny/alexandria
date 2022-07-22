@@ -16,7 +16,9 @@ open Components.Common
 open Alexandria.Client.Pages.BookEditView
 
 let private sort (books: Book list) =
-    books |> List.sortBy (fun x -> (x.Authors |> List.tryHead, x.Title))
+    //TODO author sortstring https://help.goodreads.com/s/article/Librarian-Manual-Author-names-and-profiles
+    books |> List.sortBy (fun x ->
+        (x.Authors |> List.tryHead |> Option.map (fun y -> y.Name.ToLowerInvariant()), x.Title.ToLowerInvariant()))
 
 [<ReactComponent>]
 let BookListView () =
@@ -38,8 +40,7 @@ let BookListView () =
                                                 printfn "loaded"
                                             | Deferred.Failed err -> printfn "err"
                                            setCallReq x
-                                        )
-                                                     )
+                                        ))
     React.useEffect(startLoadingData, [| |])
 
     let selectedBook, setSelected = React.useState(None)

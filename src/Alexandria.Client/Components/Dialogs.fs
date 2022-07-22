@@ -32,7 +32,7 @@ type Dialog private() =
         Bulma.modal [
             if lIsActive then modal.isActive else ()
             prop.children [
-                Bulma.modalBackground [ prop.onClick lOnClose ]
+                Bulma.modalBackground [ (* prop.onClick lOnClose *) ]
                 Bulma.modalCard [
                     prop.onKeyDown (fun e ->
                          if (e.key = "Enter") then

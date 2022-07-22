@@ -11,7 +11,7 @@ open SharedView
 open Alexandria.Client.Components.Common
 
 [<ReactComponent>]
-let navigation setPage =
+let Navigation setPage =
 
     let burgerMenuActive, setBurgerMenuActive = React.useState(false)
     let toggleBurgerMenu _ = burgerMenuActive |> not |> setBurgerMenuActive
@@ -76,7 +76,7 @@ let AppView () =
     React.router [
         router.pathMode
         router.onUrlChanged (Page.parseFromUrlSegments >> setPage)
-        router.children [ navigation setPage
+        router.children [ Navigation setPage
                           Bulma.columns [
                               prop.style [ style.marginTop 60; style.marginRight 5 ]
                               prop.children [ render  ]  ]
