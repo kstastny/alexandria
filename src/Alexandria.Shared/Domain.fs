@@ -10,6 +10,7 @@ type Author = {
 type Book = {
     Id: Guid
     Title: string
+    Note: string
     Authors: Author list
     Year: uint16 option
     InventoryLocation: string

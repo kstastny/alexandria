@@ -18,6 +18,7 @@ open Components.Form
 let BookEditView (editedBook: Book option) onSaved onClose =
 
     let title, setTitle = React.useState (editedBook |> Option.map (fun x -> x.Title) |> Option.defaultValue "")
+    let note, setNote = React.useState (editedBook |> Option.map (fun x -> x.Note) |> Option.defaultValue "")
     //TODO multiple authors
     let author, setAuthor =
         React.useState (editedBook |> Option.bind
@@ -39,7 +40,7 @@ let BookEditView (editedBook: Book option) onSaved onClose =
                         Authors = [ author ]
                         Year = None
                         InventoryLocation = ""
-                        Note = ""
+                        Note = note
                     }
                     Server.bookService.AddBook(arg)
                 | Some x ->
@@ -49,7 +50,7 @@ let BookEditView (editedBook: Book option) onSaved onClose =
                         Authors = [ author ]
                         Year = x.Year
                         InventoryLocation = x.InventoryLocation
-                        Note = ""
+                        Note = note
                     }
                     Server.bookService.EditBook(arg)
             ),
@@ -78,6 +79,10 @@ let BookEditView (editedBook: Book option) onSaved onClose =
                     (Bulma.input.text [
                         prop.valueOrDefault author
                         prop.onTextChange setAuthor ])
+                formField "Note"
+                    (Bulma.input.text [
+                        prop.valueOrDefault note
+                        prop.onTextChange setNote ])
             ]
         ]
 
@@ -89,7 +94,7 @@ let BookEditView (editedBook: Book option) onSaved onClose =
             "Book Edit"
             editFormElements
             true
-            (fun _ -> addOrEditBook()) //TODO do immediately or return up? should be fine here in this style...
+            (fun _ -> addOrEditBook())
             (fun _ -> onClose ())
     | Some x ->
         Dialog.ErrorDialog("Err", sprintf "%A" x, true, (fun _ -> setError None))

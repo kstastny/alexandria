@@ -34,6 +34,7 @@ with
             Year = x.Year
             Authors = authors |> List.map AuthorDO.toDomain
             InventoryLocation = ""
+            Note = x.Note |> Option.defaultValue ""
         }
 
 type BookAuthorDO = {

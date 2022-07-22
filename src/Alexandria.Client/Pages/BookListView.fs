@@ -71,6 +71,9 @@ let BookListView () =
                         Html.tr [
                             Html.th "Name"
                             Html.th "Author"
+                            //see https://stackoverflow.com/questions/51848020/how-to-hide-a-column-under-a-break-point-tablet-with-bulma
+                            // and https://bulma.io/documentation/helpers/visibility-helpers/#hide
+                            Html.th [ prop.text "Note" ; prop.className "is-hidden-mobile" ]
                         ]
                     ]
                     Html.tbody [
@@ -81,9 +84,12 @@ let BookListView () =
                                         prop.className "is-selected"
                                     else
                                         prop.onClick (fun _ -> setSelected (Some book))
+                                    //TODO double tap if different (in emulator does not work)
+                                    prop.onDoubleClick (fun _ -> setIsEditing true)
                                     prop.children [
                                         Html.td book.Title
                                         Html.td (book.Authors |> List.map (fun y -> y.Name) |> listString)
+                                        Html.td [ prop.text book.Note ; prop.className "is-hidden-mobile" ]
                                     ]
                                 ]
                     ]
