@@ -11,6 +11,7 @@
     <Compile Include="Query\Books.fs" />
     <Content Include="paket.references" />
     <EmbeddedResource Include="MigrationScripts\0001-BasicStructure.sql" />
+    <EmbeddedResource Include="MigrationScripts\0002-SortByColumns.sql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Alexandria.Shared\Alexandria.Shared.fsproj" />

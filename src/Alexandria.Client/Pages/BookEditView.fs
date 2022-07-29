@@ -75,7 +75,9 @@ let BookEditView (editedBook: Book option) onSaved onClose =
                         prop.valueOrDefault title
                         prop.onTextChange setTitle
                         prop.autoFocus true ])
-                formField "Author"
+                formField "Authors"
+                    //TODO list all authors, last will contain + sign to add new. others X to remove said author
+                    //editing using List.mapi
                     (Bulma.input.text [
                         prop.valueOrDefault author
                         prop.onTextChange setAuthor ])

@@ -29,11 +29,11 @@ let private createAndOpenConnection (config: ServerConfiguration) =
 
 let private booksApi (config: ServerConfiguration)  =
     {
-        GetBooks = fun _ ->
+        GetBooks = fun bookSort ->
             task {
                 use conn = createAndOpenConnection config
 
-                return! Books.getBooks conn
+                return! Books.getBooks conn bookSort
             } |> Async.AwaitTask
 
         AddBook = fun b ->

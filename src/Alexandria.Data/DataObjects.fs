@@ -9,12 +9,15 @@ open Alexandria.Shared.Domain
 type AuthorDO = {
     AuthorId: byte array
     Name: string
+    // name for sorting, similar reasoniong to https://help.goodreads.com/s/article/Librarian-Manual-Author-names-and-profiles
+    SortByName: string
 }
 with
     static member toDomain(x: AuthorDO) : Author =
         {
             Id = x.AuthorId |> Guid
             Name = x.Name
+            SortByName = x.SortByName
         }
 
 
@@ -22,6 +25,8 @@ with
 type BookDO = {
     BookId: byte array
     Title: string
+    // title for sorting https://help.goodreads.com/s/article/Librarian-Manual-Book-edit-page-how-to-use-the-sort-by-title-field
+    SortByTitle: string
     Year: uint16 option
     Note: string option
     //TODO add location just FK, use join InventoryLocation: string option
@@ -42,6 +47,15 @@ type BookAuthorDO = {
     AuthorId: byte array
 }
 
-let booksTable = table'<BookDO> "Books"
-let authorsTable = table'<AuthorDO> "Authors"
+
+[<Literal>]
+let booksTableName = "Books"
+
+let booksTable = table'<BookDO> booksTableName
+
+[<Literal>]
+let authorsTableName = "Authors"
+
+let authorsTable = table'<AuthorDO> authorsTableName
+
 let booksAuthorsTable = table'<BookAuthorDO> "BookAuthors"

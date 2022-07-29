@@ -4,7 +4,6 @@ open System
 open Alexandria.Shared.Domain
 
 
-
 type AddBook = {
     Title: string
     Authors: string list
@@ -24,7 +23,7 @@ type EditBook = {
 
 //NOTE: must be record type for Fable.Remoting
 type BookService = {
-    GetBooks : unit -> Async<Book list>
+    GetBooks : BookSort  -> Async<Book list>
     AddBook : AddBook -> Async<Book>
     EditBook : EditBook -> Async<Book>
 }

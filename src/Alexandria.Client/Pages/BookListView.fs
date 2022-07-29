@@ -16,9 +16,10 @@ open Components.Common
 open Alexandria.Client.Pages.BookEditView
 
 let private sort (books: Book list) =
-    //TODO author sortstring https://help.goodreads.com/s/article/Librarian-Manual-Author-names-and-profiles
-    books |> List.sortBy (fun x ->
-        (x.Authors |> List.tryHead |> Option.map (fun y -> y.Name.ToLowerInvariant()), x.Title.ToLowerInvariant()))
+    books
+//    //TODO author sortstring https://help.goodreads.com/s/article/Librarian-Manual-Author-names-and-profiles
+//    books |> List.sortBy (fun x ->
+//        (x.Authors |> List.tryHead |> Option.map (fun y -> y.Name.ToLowerInvariant()), x.Title.ToLowerInvariant()))
 
 [<ReactComponent>]
 let BookListView () =
@@ -27,10 +28,11 @@ let BookListView () =
     let stopEdit = (fun _ -> setIsEditing false)
 
     let books, setBooks = React.useState([])
+    let sortOrder, setSortOrder = React.useState(Author Ascending)
 
     let callReq, setCallReq = React.useState Deferred.HasNotStartedYet
     let startLoadingData =
-            React.useDeferredCallback((fun _ -> Server.bookService.GetBooks()),
+            React.useDeferredCallback((fun _ -> Server.bookService.GetBooks(sortOrder)),
                                       (fun x ->
                                            match x with
                                             | Deferred.HasNotStartedYet -> printfn "has not started"
@@ -41,7 +43,8 @@ let BookListView () =
                                             | Deferred.Failed err -> printfn "err"
                                            setCallReq x
                                         ))
-    React.useEffect(startLoadingData, [| |])
+
+    React.useEffect(startLoadingData, [| sortOrder :> obj |])
 
     let selectedBook, setSelected = React.useState(None)
 
@@ -60,7 +63,11 @@ let BookListView () =
 
             match callReq with
             | Deferred.HasNotStartedYet -> Html.none
-            | Deferred.InProgress -> Html.p [ prop.text "...loading" ]
+            | Deferred.InProgress ->
+                //TODO better loading image
+                match books with
+                | [] -> Html.p [ prop.text "...loading" ]
+                | _ -> Html.none
             | Deferred.Resolved books -> Html.none
             | Deferred.Failed err -> Html.p [ prop.text err.Message ]
 
@@ -69,8 +76,8 @@ let BookListView () =
                 prop.children [
                     Html.thead [
                         Html.tr [
-                            Html.th "Name"
-                            Html.th "Author"
+                            Html.th [ prop.text "Name" ; prop.onClick (fun _ -> setSortOrder (Name Ascending)) ]
+                            Html.th [ prop.text "Author"; prop.onClick (fun _ -> setSortOrder (Author Ascending))]
                             //see https://stackoverflow.com/questions/51848020/how-to-hide-a-column-under-a-break-point-tablet-with-bulma
                             // and https://bulma.io/documentation/helpers/visibility-helpers/#hide
                             Html.th [ prop.text "Note" ; prop.className "is-hidden-mobile" ]

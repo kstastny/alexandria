@@ -47,6 +47,8 @@ let addAuthor
         let authorDO = {
             AuthorId = authorId.ToByteArray()
             Name = name
+            //TODO separate field
+            SortByName = name.ToLowerInvariant()
         }
         let! _ =
             insert {

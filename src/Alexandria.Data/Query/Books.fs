@@ -15,7 +15,27 @@ open DataObjects
 
 let private third (_, _, z) = z
 
-let getBooks (dbConnection: IDbConnection) =
+
+let private bookForNameof = Unchecked.defaultof<BookDO>
+let private authorForNameof = Unchecked.defaultof<AuthorDO>
+
+let private dapperDirection = function
+    | Ascending -> Asc
+    | Descending -> Desc
+
+let private orderBy (bookSort: BookSort) (query: SelectQuery) =
+    match bookSort with
+    | Name direction ->
+        {query with OrderBy = [ $"{booksTableName}.{nameof bookForNameof.SortByTitle}" , direction |> dapperDirection ] }
+    | Author direction ->
+        {query with OrderBy =
+                        [
+                            $"{authorsTableName}.{nameof authorForNameof.SortByName}" , direction |> dapperDirection
+                            $"{booksTableName}.{nameof bookForNameof.SortByTitle}" , Asc
+                        ] }
+
+
+let getBooks (dbConnection: IDbConnection) (bookSort: BookSort) =
     task {
         let! bookAuthor =
             select {
@@ -24,6 +44,8 @@ let getBooks (dbConnection: IDbConnection) =
                     innerJoin a in authorsTable on (ba.AuthorId = a.AuthorId)
                     selectAll
             }
+            //TODO will the sort work for books with more authors? We should just sort by FIRST authors name (when multiple authors are implemented)
+            |> orderBy bookSort
             |> dbConnection.SelectAsyncOption<BookDO, BookAuthorDO, AuthorDO>
             |> Task.map List.ofSeq
 
@@ -81,6 +103,7 @@ let addBook
         let bookDO = {
             BookId = bookId.ToByteArray()
             Title = book.Title
+            SortByTitle = book.Title.ToLowerInvariant()
             Year = book.Year
             Note = Some book.Note
         }
