@@ -23,7 +23,7 @@ type EditBook = {
 
 //NOTE: must be record type for Fable.Remoting
 type BookService = {
-    GetBooks : BookSort  -> Async<Book list>
+    GetBooks : Sort<BookSort>  -> Async<Book list>
     AddBook : AddBook -> Async<Book>
     EditBook : EditBook -> Async<Book>
 }

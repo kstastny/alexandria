@@ -21,3 +21,19 @@
     margin-right: 4px;
     padding-right: 4px;
 }
+
+
+
+/* https://stackoverflow.com/questions/1455095/html-left-and-right-align-elements */
+.left, .right {
+    width: 50%; /* Floated elements technically need a width specified. */
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+    text-align: right;
+}

@@ -19,11 +19,20 @@ type Book = {
 }
 
 
-type SortDirection =
-    | Ascending
-    | Descending
-
-
 type BookSort =
-    | Name of SortDirection
-    | Author of SortDirection
+    | Title
+    | Author
+
+
+type Sort<'a when 'a: equality> =
+    | Ascending of 'a
+    | Descending of 'a
+    with
+        member x.reverse =
+            match x with
+            | Ascending y -> Descending y
+            | Descending y -> Ascending y
+        member x.udpateSortOrder sortProperty  =
+            match x with
+            | Ascending y when y = sortProperty -> Descending y
+            | _ -> Ascending sortProperty

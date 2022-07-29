@@ -19,23 +19,25 @@ let private third (_, _, z) = z
 let private bookForNameof = Unchecked.defaultof<BookDO>
 let private authorForNameof = Unchecked.defaultof<AuthorDO>
 
-let private dapperDirection = function
-    | Ascending -> Asc
-    | Descending -> Desc
+let private getOrderBy direction = function
+    | Title ->
+        [ $"{booksTableName}.{nameof bookForNameof.SortByTitle}", direction ]
+    | Author ->
+        [
+            $"{authorsTableName}.{nameof authorForNameof.SortByName}", direction
+            $"{booksTableName}.{nameof bookForNameof.SortByTitle}", Asc
+        ]
 
-let private orderBy (bookSort: BookSort) (query: SelectQuery) =
+
+
+let private orderBy (bookSort: Sort<BookSort>) (query: SelectQuery) =
     match bookSort with
-    | Name direction ->
-        {query with OrderBy = [ $"{booksTableName}.{nameof bookForNameof.SortByTitle}" , direction |> dapperDirection ] }
-    | Author direction ->
-        {query with OrderBy =
-                        [
-                            $"{authorsTableName}.{nameof authorForNameof.SortByName}" , direction |> dapperDirection
-                            $"{booksTableName}.{nameof bookForNameof.SortByTitle}" , Asc
-                        ] }
+    | Ascending column -> {query with OrderBy = getOrderBy Asc column }
+    | Descending column -> {query with OrderBy = getOrderBy Desc column }
 
 
-let getBooks (dbConnection: IDbConnection) (bookSort: BookSort) =
+//let getBooks (dbConnection: IDbConnection) (bookSort: BookSort) =
+let getBooks (dbConnection: IDbConnection) (bookSort: Sort<BookSort>) =
     task {
         let! bookAuthor =
             select {

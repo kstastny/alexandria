@@ -4,6 +4,7 @@
 open Alexandria.Shared.BooksApi
 open Alexandria.Shared.Domain
 
+open Browser.Types
 open Feliz
 open Feliz.Bulma
 open Feliz.UseDeferred
@@ -14,12 +15,8 @@ open Alexandria.Client
 open Components.Common
 
 open Alexandria.Client.Pages.BookEditView
+open Alexandria.Client.Components.Sorting
 
-let private sort (books: Book list) =
-    books
-//    //TODO author sortstring https://help.goodreads.com/s/article/Librarian-Manual-Author-names-and-profiles
-//    books |> List.sortBy (fun x ->
-//        (x.Authors |> List.tryHead |> Option.map (fun y -> y.Name.ToLowerInvariant()), x.Title.ToLowerInvariant()))
 
 [<ReactComponent>]
 let BookListView () =
@@ -28,7 +25,9 @@ let BookListView () =
     let stopEdit = (fun _ -> setIsEditing false)
 
     let books, setBooks = React.useState([])
-    let sortOrder, setSortOrder = React.useState(Author Ascending)
+    //let sortOrder, setSortOrder = React.useState(Author Ascending)
+    let sortOrder, setSortOrder = React.useState(Ascending Author)
+    let updateSort = sortOrder.udpateSortOrder >> setSortOrder
 
     let callReq, setCallReq = React.useState Deferred.HasNotStartedYet
     let startLoadingData =
@@ -47,6 +46,8 @@ let BookListView () =
     React.useEffect(startLoadingData, [| sortOrder :> obj |])
 
     let selectedBook, setSelected = React.useState(None)
+
+
 
     let content =
         Html.div [
@@ -76,15 +77,15 @@ let BookListView () =
                 prop.children [
                     Html.thead [
                         Html.tr [
-                            Html.th [ prop.text "Name" ; prop.onClick (fun _ -> setSortOrder (Name Ascending)) ]
-                            Html.th [ prop.text "Author"; prop.onClick (fun _ -> setSortOrder (Author Ascending))]
+                            sortedColumnHeader sortOrder updateSort Title "Title"
+                            sortedColumnHeader sortOrder updateSort Author "Author"
                             //see https://stackoverflow.com/questions/51848020/how-to-hide-a-column-under-a-break-point-tablet-with-bulma
                             // and https://bulma.io/documentation/helpers/visibility-helpers/#hide
                             Html.th [ prop.text "Note" ; prop.className "is-hidden-mobile" ]
                         ]
                     ]
                     Html.tbody [
-                        for book in books |> sort do
+                        for book in books do
                             yield
                                 Html.tr [
                                     if Some book = selectedBook then
