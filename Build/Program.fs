@@ -44,7 +44,6 @@ let clientSrcPath = srcPath </> "Alexandria.Client"
 let serverSrcPath = srcPath </> "Alexandria.Server"
 let appPublishPath = publishPath </> "app"
 let fableBuildPath = clientSrcPath </> ".fable-build"
-let infrastructurePublishPath = publishPath </> "infrastructure"
 
 // Targets
 let clean proj = [ proj </> "bin"; proj </> "obj" ] |> Shell.cleanDirs
@@ -57,19 +56,10 @@ Target.create "InstallClient" (fun _ ->
     Tools.yarn "install --frozen-lockfile" clientSrcPath
 )
 
-Target.create "Publish" (fun _ ->
+Target.create "CleanPublishPath" (fun _ ->
     [ appPublishPath ] |> Shell.cleanDirs
-    //TODO publish for other architectures
-    let publishArgs = sprintf "publish -c Release -r linux-arm -o \"%s\"" appPublishPath
-    Tools.dotnet publishArgs serverSrcPath
-    [ appPublishPath </> "appsettings.Development.json" ] |> File.deleteAll
-    Tools.dotnet (sprintf "fable --outDir %s --run webpack-cli -p" fableBuildPath) clientSrcPath
-)
+    )
 
-Target.create "PublishInfrastructure" (fun _ ->
-    Directory.ensure infrastructurePublishPath
-    "Infrastructure.fsx" |> Shell.copyFile infrastructurePublishPath
-)
 
 Target.create "Run" (fun _ ->
     let server = async {
@@ -77,7 +67,7 @@ Target.create "Run" (fun _ ->
         Tools.dotnet "watch run" serverSrcPath
     }
     let client = async {
-        Tools.dotnet (sprintf "fable watch --outDir %s --run webpack-dev-server" fableBuildPath) clientSrcPath
+        Tools.dotnet $"fable watch --outDir %s{fableBuildPath} --run webpack-dev-server" clientSrcPath
     }
     [server;client]
     |> Async.Parallel
@@ -85,9 +75,16 @@ Target.create "Run" (fun _ ->
     |> ignore
 )
 
+Target.create "Publish" (fun _ ->
+    let publishArgs = $"publish -c Release -o \"%s{appPublishPath}\" --no-self-contained"
+    Tools.dotnet publishArgs serverSrcPath
+    [ appPublishPath </> "appsettings.Development.json" ] |> File.deleteAll
+    Tools.dotnet $"fable --outDir %s{fableBuildPath} --run webpack-cli -p" clientSrcPath
+)
+
 let dependencies = [
     "InstallClient"
-        //==> "PublishInfrastructure"
+        ==> "CleanPublishPath"
         ==> "Publish"
 
     "InstallClient"
@@ -103,5 +100,5 @@ let main args =
       | _ -> Target.runOrDefaultWithArguments "Run"
       0
   with e ->
-      printfn "%A" e
+      printfn $"%A{e}"
       1
